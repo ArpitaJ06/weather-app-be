@@ -1,18 +1,19 @@
+require("dotenv").config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
+const API_KEY = process.env.API_KEY
 app.use(cors({
   origin: '*'
 }
 ));
 // Return current weather details for 5 random cities
-app.get('/current-weather/:apiid', async (req, res) => {
-  const apiKey = req.params.apiid;
+app.get('/current-weather', async (req, res) => {
   try {
     const cityIds = [2759794, 2657896, 2800866, 2988507, 3067696]; // IDs of specific cities
-    const weatherData = await getCurrentWeatherForCities(cityIds, apiKey);
+    const weatherData = await getCurrentWeatherForCities(cityIds, API_KEY);
     const currentWeather = weatherData.map(item => {
       const city = {
         id: item.id,
@@ -42,12 +43,11 @@ async function getCurrentWeatherForCities(cityIds, apiKey) {
 }
 
 // Return weather forecast for a selected city
-app.get('/forecast/:id/:apiid', async (req, res) => {
-  const apiKey = req.params.apiid;
+app.get('/forecast/:id', async (req, res) => {
   const cityId = req.params.id;
   try {
-    const city = await getCityById(cityId, apiKey);
-    const forecast = await getWeatherForecast(cityId, apiKey);
+    const city = await getCityById(cityId, API_KEY);
+    const forecast = await getWeatherForecast(cityId, API_KEY);
     const weatherForecast = forecast.list.slice(0, 10).map(item => {
       const hour = new Date(item.dt * 1000).getHours();
       const temperature = item.main.temp;
