@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:8080'
+  origin: '*'
 }
 ));
 // Return current weather details for 5 random cities
