@@ -3,7 +3,10 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:8080'
+}
+));
 // Return current weather details for 5 random cities
 app.get('/current-weather/:apiid', async (req, res) => {
   const apiKey = req.params.apiid;
