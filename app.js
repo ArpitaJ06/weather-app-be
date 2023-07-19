@@ -1,41 +1,42 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
-
+app.use(cors());
 // Return current weather details for 5 random cities
 app.get('/current-weather/:apiid', async (req, res) => {
-    const apiKey = req.params.apiid;
-    try {
-      const cityIds = [2759794, 2657896, 2800866, 2988507, 3067696]; // IDs of specific cities
-      const weatherData = await getCurrentWeatherForCities(cityIds, apiKey);
-      const currentWeather = weatherData.map(item => {
-        const city = {
-          id: item.id,
-          name: item.name,
-          country: item.sys.country
-        };
-        const temperature = item.main.temp;
-        const condition = item.weather[0].description;
-        return { city, weather: { temperature, condition } };
-      });
-      res.json(currentWeather);
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Failed to fetch current weather' });
-    }
-  });
-  
-  // Helper function to fetch current weather for specific cities from OpenWeather API
-  async function getCurrentWeatherForCities(cityIds, apiKey) {
-    try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/group?id=${cityIds.join(',')}&units=metric&appid=${apiKey}`);
-      return response.data.list;
-    } catch (error) {
-      console.error('Error:', error);
-      throw new Error('Failed to fetch current weather');
-    }
+  const apiKey = req.params.apiid;
+  try {
+    const cityIds = [2759794, 2657896, 2800866, 2988507, 3067696]; // IDs of specific cities
+    const weatherData = await getCurrentWeatherForCities(cityIds, apiKey);
+    const currentWeather = weatherData.map(item => {
+      const city = {
+        id: item.id,
+        name: item.name,
+        country: item.sys.country
+      };
+      const temperature = item.main.temp;
+      const condition = item.weather[0].description;
+      return { city, weather: { temperature, condition } };
+    });
+    res.json(currentWeather);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to fetch current weather' });
   }
+});
+
+// Helper function to fetch current weather for specific cities from OpenWeather API
+async function getCurrentWeatherForCities(cityIds, apiKey) {
+  try {
+    const response = await axios.get(`https://api.openweathermap.org/data/2.5/group?id=${cityIds.join(',')}&units=metric&appid=${apiKey}`);
+    return response.data.list;
+  } catch (error) {
+    console.error('Error:', error);
+    throw new Error('Failed to fetch current weather');
+  }
+}
 
 // Return weather forecast for a selected city
 app.get('/forecast/:id/:apiid', async (req, res) => {
